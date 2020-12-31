@@ -27,14 +27,11 @@
       <textarea
         placeholder="Ctrl + Enter Send"
         v-model="text"
-        @keyup="inputing"
+        @keyup="inputSend"
       ></textarea>
     </div>
     <div class="send-msg">
-      <!-- <a-button type="primary" @click="sendMsg($refs.osComponentRef)"
-        >Send</a-button
-      > -->
-      <button @click="sendMsg($refs.osComponentRef)">Send</button>
+      <button @click="sendMsg">Send</button>
     </div>
   </div>
 </template>
@@ -64,7 +61,7 @@ export default {
           autoHide: "move",
         },
         callbacks: {
-          onContentSizeChanged: this.onContentSizeChanged,
+          onContentSizeChanged: this.onContentSizeChangedFunc,
         },
       },
       text: "",
@@ -80,18 +77,21 @@ export default {
     },
   },
   methods: {
-    inputing(e) {
+    inputSend(e) {
       if (e.ctrlKey && e.keyCode === 13 && this.text.length) {
         this.sendMsg();
       }
     },
-    onContentSizeChanged(e) {
-      console.log(this.$refs.osComponentRef.osInstance());
-      this.$refs.osComponentRef.osInstance();
-      // .scroll({ y: "100%" }, 250, "swing");
+    onContentSizeChangedFunc() {
+      console.log("osInstance() -> ", this.$refs.osComponentRef.osInstance());
+      // If I don't add judgment, the first time. scroll() will report an error,
+      // and then the entire. osInstance() will get null
+      // Try to remove it.
+      if (this.$refs.osComponentRef.osInstance()) {
+        this.$refs.osComponentRef.osInstance().scroll({y: "100%"}, 250, "swing");
+      }
     },
-    sendMsg(osComponentRef) {
-      console.log(osComponentRef.osInstance());
+    sendMsg() {
       this.messages.push({
         text: this.text,
         date: new Date(),
@@ -103,94 +103,72 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 .m-message {
   height: 420px;
   padding: 10px 15px;
-
-  li {
-    margin-bottom: 15px;
-  }
-
-  .time {
-    margin: 7px 0;
-    text-align: center;
-
-    > span {
-      display: inline-block;
-      padding: 0 18px;
-      font-size: 12px;
-      color: #fff;
-      border-radius: 2px;
-      background-color: #dcdcdc;
-    }
-  }
-
-  .avatar {
-    float: left;
-    margin: 10px 10px 0 0;
-    border-radius: 3px;
-  }
-
-  .text {
-    display: inline-block;
-    position: relative;
-    padding: 0 10px;
-    max-width: ~"calc(100% - 40px)";
-    min-height: 30px;
-    line-height: 2.5;
-    font-size: 14px;
-    text-align: left;
-    word-break: break-all;
-    background-color: #F4F4F4;
-    border-radius: 4px;
-
-    &:before {
-      content: " ";
-      position: absolute;
-      top: 9px;
-      right: 100%;
-      border: 6px solid transparent;
-      border-right-color: #fafafa;
-    }
-  }
-
-  .self {
-    text-align: right;
-
-    .avatar {
-      float: right;
-      margin: 0 0 0 10px;
-    }
-
-    .text {
-      background-color: #b2e281;
-
-      &:before {
-        right: inherit;
-        left: 100%;
-        border-right-color: transparent;
-        border-left-color: #b2e281;
-      }
-    }
-  }
 }
-
+.m-message li {
+  margin-bottom: 15px;
+}
+.m-message .time {
+  margin: 7px 0;
+  text-align: center;
+}
+.m-message .time > span {
+  display: inline-block;
+  padding: 0 18px;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 2px;
+  background-color: #dcdcdc;
+}
+.m-message .text {
+  display: inline-block;
+  position: relative;
+  padding: 0 10px;
+  max-width: 95%;
+  min-height: 30px;
+  line-height: 2.5;
+  font-size: 14px;
+  text-align: left;
+  word-break: break-all;
+  background-color: #F4F4F4;
+  border-radius: 4px;
+}
+.m-message .text:before {
+  content: " ";
+  position: absolute;
+  top: 9px;
+  right: 100%;
+  border: 6px solid transparent;
+  border-right-color: #fafafa;
+}
+.m-message .self {
+  text-align: right;
+}
+.m-message .self .text {
+  background-color: #b2e281;
+}
+.m-message .self .text:before {
+  right: inherit;
+  left: 100%;
+  border-right-color: transparent;
+  border-left-color: #b2e281;
+}
 .m-text {
   height: 100px;
   border-top: solid 1px #ddd;
   margin-top: 10px;
-
-  textarea {
-    padding: 10px;
-    height: 100%;
-    width: 100%;
-    border: none;
-    outline: none;
-    resize: none;
-  }
 }
-
+.m-text textarea {
+  padding: 10px;
+  height: 100%;
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+}
 .send-msg {
   position: absolute;
   right: 20px;
