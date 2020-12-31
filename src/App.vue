@@ -37,7 +37,9 @@
 </template>
 
 <script>
-import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
+// Using lazy loading .
+const OverlayScrollbarsComponent = () => import("overlayscrollbars-vue");
+// import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
 
 export default {
   name: "App",
@@ -75,6 +77,12 @@ export default {
       }
       return date.getHours() + ":" + date.getMinutes();
     },
+  },
+  created () {
+    console.log('created')
+  },
+  mounted () {
+    console.log('mounted')
   },
   methods: {
     inputSend(e) {
